@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="utf-8"?>
+<executable>
+  <category>Diffusion.Utilities</category>
+  <title>Resample DTI Volume - log euclidean</title>
+  <description>
+Resampling an image is a very important task in image analysis. It is especially important in the frame of image registration. This module implements DT image resampling through the use of itk Transforms. The resampling is controlled by the Output Spacing. "Resampling" is performed in space coordinates, not pixel/grid coordinates. It is quite important to ensure that image spacing is properly set on the images involved. The interpolator is required since the mapping from one space to the other will often require evaluation of the intensity of the image at non-grid positions.
+</description>
+  <version>0.1</version>
+  <documentation-url>http://wiki.slicer.org/slicerWiki/index.php/Modules:ResampleDTIVolume-Documentation-3.6</documentation-url>
+  <license></license>
+  <contributor>Francois Budin</contributor>
+<acknowledgements>
+The Log-Euclidean framework is protected by a patent: for any commercial use, please contact {Vincent.Arsigny, Xavier.Pennec, Nicholas.Ayache}@Sophia.Inria.fr; for non-commercial use, this software is free and open-source. This work is part of the National Alliance for Medical Image Computing (NAMIC), funded by the National Institutes of Health through the NIH Roadmap for Medical Research, Grant U54 EB005149. Information on the National Centers for Biomedical Computing can be obtained from http://nihroadmap.nih.gov/bioinformatics
+</acknowledgements>
+<parameters>
+  <label>Input/Ouput</label>
+  <description>Input/output parameters</description>
+    <image type="tensor">
+      <name>inputVolume</name>
+      <label>Input Volume</label>
+      <channel>input</channel>
+      <index>0</index>
+      <description>Input volume to be resampled</description>
+    </image>
+    <image type="tensor">
+      <name>outputVolume</name>
+      <label>Output Volume</label>
+      <channel>output</channel>
+      <index>1</index>
+      <description>Resampled Volume</description>
+    </image>
+    <image type="any">
+      <name>referenceVolume</name>
+      <label>Reference Volume (To Set Output Parameters)</label>
+      <channel>input</channel>
+      <flag>-R</flag>
+      <longflag>--Reference</longflag>
+      <description>Reference Volume (spacing,size,orientation,origin)</description>
+      <default></default>
+    </image>
+</parameters>
+<parameters>
+  <label>Transform Parameters</label>
+  <description>Parameters used to transform the input image into the output image</description>
+    <transform fileExtensions=".mat">
+      <name>transformationFile</name>
+      <label>Transform Node</label>
+      <flag>-f</flag>
+      <longflag>--transformationFile</longflag>
+      <default></default>
+      <channel>input</channel>
+    </transform>
+     <image type="vector">
+        <name>deffield</name>
+        <label>Deformation Field Volume</label>
+        <channel>input</channel>
+        <flag>-H</flag>
+        <longflag>--defField</longflag>
+        <description>File containing the deformation field (3D vector image containing vectors with 3 components)</description>
+        <default></default>
+     </image>
+    <string-enumeration>
+      <name>typeOfField</name>
+      <longflag>--hfieldtype</longflag>
+      <description>Set if the deformation field is an -Field</description>
+      <label>Displacement or h-Field</label>
+      <element>displacement</element>
+      <element>h-Field</element>
+      <default>h-Field</default>
+    </string-enumeration>
+</parameters>
+<parameters>
+  <label>Processing Options</label>
+  <string-enumeration>
+      <name>interpolationType</name>
+      <flag>-i</flag>
+      <longflag>--interpolation</longflag>
+      <description>Sampling algorithm (linear , nn (nearest neighborhoor), ws (WindowedSinc), bs (BSpline) )</description>
+      <label>Interpolation</label>
+      <element>linear</element>
+      <element>nn</element>
+      <element>ws</element>
+      <element>bs</element>
+      <default>linear</default>
+  </string-enumeration>
+  <boolean>
+     <name>nolog</name>
+     <longflag>--nolog</longflag>
+     <description>Do not use the Log-Euclidean Framework to compute the resampled volume</description>
+     <label>No Log-Euclidean</label>
+     <default>false</default>
+  </boolean>
+  <string-enumeration>
+      <name>correction</name>
+      <longflag>--correction</longflag>
+      <description>Correct the tensors if computed tensor is not semi-definite positive. Useful only if nolog is selected</description>
+      <label>Tensors Correction</label>
+      <element>zero</element>
+      <element>none</element>
+      <element>abs</element>
+      <element>nearest</element>
+      <default>none</default>
+    </string-enumeration>
+</parameters>
+<parameters advanced="true">
+  <label>Tensor Transform Type</label>
+    <string-enumeration>
+      <name>ppd</name>
+      <longflag>--transform_tensor_method</longflag>
+      <flag>-T</flag>
+      <description>Chooses between 2 methods to transform the tensors: Finite Strain (FS), faster but less accurate, or Preservation of the Principal Direction (PPD)</description>
+      <label>Finite Strain (FS) or \nPreservation of the Principal Direction (PPD)</label>
+      <element>PPD</element>
+      <element>FS</element>
+      <default>PPD</default>
+    </string-enumeration>
+</parameters>
+<parameters advanced="true">
+    <label>Advanced Transform Parameters</label>
+    <description>Those parameters should normally not be modified</description>
+    <string-enumeration>
+      <name>transformsOrder</name>
+      <longflag>--transform_order</longflag>
+      <description>Select in what order the transforms are read</description>
+      <label>Transforms Order</label>
+      <element>input-to-output</element>
+      <element>output-to-input</element>
+      <default>output-to-input</default>
+    </string-enumeration>
+    <boolean>
+      <name>notbulk</name>
+      <longflag>--notbulk</longflag>
+      <description>The transform following the BSpline transform is not set as a bulk transform for the BSpline transform</description>
+      <label>Not a Bulk Transform</label>
+      <default>false</default>
+    </boolean>
+    <boolean>
+      <name>space</name>
+      <longflag>--spaceChange</longflag>
+      <description>Space Orientation between transform and image is different (RAS/LPS) (warning: if the transform is a Transform Node in Slicer3, do not select)</description>
+      <label>Space Orientation inconsistency (between transform and image)</label>
+      <default>false</default>
+    </boolean>
+    <image type="vector">
+        <name>outputHfield</name>
+        <label>Save concatenation of transforms</label>
+        <channel>output</channel>
+        <longflag>--outputHField</longflag>
+        <description>Save transform as an HField (3D vector image containing vectors with 3 components)</description>
+        <default></default>
+     </image>
+</parameters>
+
+
+<parameters advanced="true">
+    <label>Advanced Resampling Parameters</label>
+    <description>Parameters used for resampling</description>
+    <integer>
+      <name>numberOfThread</name>
+      <flag>-n</flag>
+      <longflag>--number_of_thread</longflag>
+      <description>Number of thread used to compute the output image</description>
+      <label>Number Of Threads</label>
+      <default>0</default>
+    </integer>
+    <double>
+      <name>defaultPixelValue</name>
+      <flag>-p</flag>
+      <longflag>--default_pixel_value</longflag>
+      <description>Default pixel value for samples falling outside of the input region</description>
+      <label>Default Pixel Value</label>
+      <default>1e-10</default>
+    </double>
+</parameters>
+
+
+
+
+</executable>
