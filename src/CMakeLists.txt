@@ -59,7 +59,7 @@ IF( ${STATIC_RESAMPLEDTI} )
     ITKBasicFilters
     )
 ELSE( ${STATIC_RESAMPLEDTI} )
-  add_executable(${CLP} concatenateHField.cpp)
+  add_executable(${CLP} TransformDeformationField.cpp)
   target_link_libraries (${CLP} ${CLP}Lib)
 ENDIF( ${STATIC_RESAMPLEDTI} )
 if(Slicer3_SOURCE_DIR)
