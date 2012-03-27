@@ -303,7 +303,11 @@ int main( int argc , char * argv[] )
   list.typeOfField = typeOfField;
   list.outputHfield = outputHfield ;
   list.outputHfieldAvg = outputHfieldAvg;
- // Do< float > ( list ) ;
+
+  if (list.outputHfield.compare( "" ))
+  {	
+	Do< float > ( list ) ;
+  }
 
   if (list.outputHfieldAvg.compare( "" ))
   {

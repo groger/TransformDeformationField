@@ -55,8 +55,8 @@ struct parameters
   std::vector<std::string> deffieldtoconcatenate;
   std::string referenceVolume ;
   std::vector<std::string> typeOfField ;
-  std::string outputHfield ;
-  std::string outputHfieldAvg;
+  std::string outputConcatenate ;
+  std::string outputAvg;
 };
 
 
@@ -176,7 +176,7 @@ int Do( parameters list )
         HFieldWriterTypePointer hfwriter = HFieldWriterType::New() ; 
 
         hfwriter->SetInput( fieldPointer1 ) ;
-        hfwriter->SetFileName( list.outputHfield ) ;
+        hfwriter->SetFileName( list.outputConcatenate ) ;
         try
         {
           hfwriter->Update() ;
@@ -276,7 +276,7 @@ int averageDeformationField(parameters list )
         HFieldWriterTypePointer hfwriterAvg = HFieldWriterType::New() ; 
 
         hfwriterAvg->SetInput( fieldPointer1 ) ;
-        hfwriterAvg->SetFileName( list.outputHfieldAvg ) ;
+        hfwriterAvg->SetFileName( list.outputAvg ) ;
         try
         {
           hfwriterAvg->Update() ;
@@ -301,15 +301,15 @@ int main( int argc , char * argv[] )
   list.referenceVolume = referenceVolume ;
   list.deffieldtoconcatenate = deffieldtoconcatenate;
   list.typeOfField = typeOfField;
-  list.outputHfield = outputHfield ;
-  list.outputHfieldAvg = outputHfieldAvg;
+  list.outputConcatenate = outputConcatenate ;
+  list.outputAvg = outputAvg;
 
-  if (list.outputHfield.compare( "" ))
+  if (list.outputConcatenate.compare( "" ))
   {	
 	Do< float > ( list ) ;
   }
 
-  if (list.outputHfieldAvg.compare( "" ))
+  if (list.outputAvg.compare( "" ))
   {
 	averageDeformationField< float >(list ) ;
   }
